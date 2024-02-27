@@ -64,23 +64,50 @@ def count_json_files(folder_path):
 
 
 
-
-
+#================================================================================
+#paste path to JSON folder here
 folder_path = "/Users/tomrihoy/Desktop/ICL/Academic_work/Data_science/Santander_bikes_project/JSON"  
-    
-column_names=['empty_slots','free_bikes','id','latitude','longitude','name','timestamp','extra.installDate','extra.installed','extra.locked',
-                'extra.name','extra.removalDate','extra.temporary','extra.terminalName','extra.uid']
+
+#for reference    
+#column_names=['empty_slots','free_bikes','id','latitude','longitude','name','timestamp','extra.installDate','extra.installed','extra.locked',
+#                'extra.name','extra.removalDate','extra.temporary','extra.terminalName','extra.uid']
 row_number=791
 file_number=count_json_files(folder_path)
 #create holding matrix to hold data, better for memory
 holding_matrix=np.zeros(shape=(row_number, file_number))
-
-
 empty_slots, station_list=process_folder(folder_path, 'empty_slots', holding_matrix)
-free_bikes, station_list=process_folder(folder_path, 'free_bikes', holding_matrix)
+holding_matrix1=np.zeros(shape=(row_number, file_number))
+free_bikes, station_list=process_folder(folder_path, 'free_bikes', holding_matrix1)
+
+
+station_number=100
+plt.plot(empty_slots[station_number,:]/(empty_slots[station_number,:]+free_bikes[station_number,:])*100)
+plt.title(f'% occupancy for station {station_number}')
+plt.ylabel('station occupancy %')
+plt.ylim(bottom=0)
+plt.show()
+
+
+# plt.plot(np.mean(empty_slots[:,0:24]/(empty_slots[:,0:24]+free_bikes[:,0:24])*100,axis=1))
+# plt.ylabel('global station occupancy %')
+# plt.ylim(bottom=0)
+# plt.show()
+
+
+# # Define start and end timestamps
+# start_timestamp = '2024-02-27 00:00:00'
+# end_timestamp = '2024-02-28 00:00:00'
+
+# # Generate timestamps at 15-minute intervals
+# time_stamps = pd.date_range(start=start_timestamp, end=end_timestamp, freq='15T')
+
+# # Convert to a NumPy array if needed
+# time_matrix = time_stamps.to_numpy()
+
+
+
 #This isn't working right now will fix later
 #time_recorded, station_list=process_folder(folder_path, 'timestamp', holding_matrix)
-
 
 #EXAMPLE USAGE:
 #empty_slots[station_number, time]
