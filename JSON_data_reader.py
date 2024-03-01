@@ -115,7 +115,7 @@ def check_station_count(folder_path):
 
 #Choose day, current days available are 26_Feb-28_Feb
 #Day="All_data"
-Day="All_data"
+Day="27_Feb"
 folder_path = "/Users/tomrihoy/Desktop/ICL/Academic_work/Data_science/Santander_bikes_project/JSON/"+Day  
 
 #for reference    
@@ -139,5 +139,5 @@ freebikes_df.to_csv('/Users/tomrihoy/Desktop/ICL/Academic_work/Data_science/Sant
 new_timestamps = pd.date_range(emptyslots_df.index.min(), emptyslots_df.index.max(), freq='15min')
 df_interpolated = pd.DataFrame(index=new_timestamps)
 for column in emptyslots_df.columns:
-    df_interpolated[column] = emptyslots_df[column].interpolate(method='linear')
+    df_interpolated[column] = emptyslots_df[column].interpolate(method='linear').round().astype(int)
 # %%
