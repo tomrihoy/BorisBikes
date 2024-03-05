@@ -33,10 +33,10 @@ def process_folder(folder_path, category, stations_to_exclude):
     files = os.listdir(folder_path)
     file_number=count_json_files(folder_path)
     #791 is the maximum number of stations
-    holder=np.full((792-len(stations_to_exclude),file_number),np.nan)
-    lat_holder=np.full((792-len(stations_to_exclude),file_number),np.nan)
-    long_holder=np.full((792-len(stations_to_exclude),file_number),np.nan)
-    time_holder=np.zeros(shape=(792-len(stations_to_exclude), file_number), dtype=object)
+    # holder=np.full((792-len(stations_to_exclude),file_number),np.nan)
+    # lat_holder=np.full((792-len(stations_to_exclude),file_number),np.nan)
+    # long_holder=np.full((792-len(stations_to_exclude),file_number),np.nan)
+    # time_holder=np.zeros(shape=(792-len(stations_to_exclude)*2, file_number), dtype=object)
     # Extract datetime information from file names and create a dictionary
     file_dict = {}
     for file_name in files:
@@ -49,7 +49,18 @@ def process_folder(folder_path, category, stations_to_exclude):
 
     # Sort the file names based on datetime values
     sorted_files = sorted(file_dict, key=file_dict.get)
-
+    #for file_name in sorted_files:
+    for file_name in sorted_files:
+        file_path = os.path.join(folder_path, file_name)
+        # Process the JSON file and save as a DataFrame
+        df = process_json_file(file_path)
+        condition = ~df['name'].isin(stations_to_exclude)
+        reduction=condition.sum()
+    holder=np.full((reduction,file_number),np.nan)
+    lat_holder=np.full((reduction,file_number),np.nan)
+    long_holder=np.full((reduction,file_number),np.nan)
+    time_holder=np.zeros(shape=(reduction, file_number), dtype=object)    
+    
     # Process each JSON file in the sorted order
     for file_name in sorted_files:
         file_path = os.path.join(folder_path, file_name)
@@ -112,15 +123,14 @@ def check_station_count(folder_path):
     return missing_stations, station_list
 
 
- 
-        
+      
             
 #%%
 #================================================================================
 
 #Choose day, current days available are 26_Feb-28_Feb
-#Day="All_data"
 Day="All_data"
+#Day="28_Feb"
 folder_path = "/Users/tomrihoy/Desktop/ICL/Academic_work/Data_science/Santander_bikes_project/JSON/"+Day  
 
 #for reference    
@@ -128,6 +138,10 @@ column_names=['empty_slots','free_bikes','id','latitude','longitude','name','tim
                 'extra.name','extra.removalDate','extra.temporary','extra.terminalName','extra.uid']
 
 missing_stations, remaining_station=check_station_count(folder_path)
+
+#process_folder(folder_path, 'empty_slots',missing_stations)
+
+
 times,emptyslots, lat, long=process_folder(folder_path, 'empty_slots',missing_stations)
 times,freebikes, _, _=process_folder(folder_path, 'free_bikes',missing_stations)
 emptyslots_df=pd.DataFrame(emptyslots.T, index=times, columns=remaining_station)
